@@ -13,7 +13,7 @@
 <div id="container" style="width:100%; height:400px;"></div>
 </body>
 <script>
-    $.getJSON('/<%=@collection%>.json?field=<%=@field%>', function (data) {
+    $.getJSON('/data.json?collection=<%=@collection%>&field=<%=@field%>', function (data) {
         Highcharts.chart('container', {
         chart: {
         zoomType: 'x'
