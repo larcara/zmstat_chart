@@ -59,8 +59,10 @@
         })
             .done(function( data ) {
                 var series = chart1.series[0];
-                chart1_data = data;
-                console.log(chart1_data);
+                $.each(data, function(key,val){chart1_data.push(val);});
+                if (chart1_data.size > 10000)
+                    {chart1_data.slice(0,100);}
+
                 chart1.series[0].setData(chart1_data);
                 chart1.redraw();
                  // shift if the series is
