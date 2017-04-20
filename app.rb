@@ -24,6 +24,6 @@ end
 get "/data.json" do
   @zmstat = ZmstatChart.new()
   content_type :json
-  @zmstat.get_data(param[:collection], params[:field], skip: params[:skip], limit: params[:limit]).to_json
+  @zmstat.get_data(params[:collection], params[:field], skip: params[:skip], limit: params[:limit]).to_json
 end
 
