@@ -1,34 +1,51 @@
 require 'mongo'
 
 
+
 class ZmstatChart
 
   TIME_STAMP_FORMAT = "%m/%d/%Y %H:%M:%S"
   LOGGER_OUT = STDOUT
-  def initialize
-    @client = connect( user: "zmstat", password: "zmstat", db: "zmstats")
+  def initialize(db: "zmstats")
+    @mongo_cnf = YAML::load_file(File.join(__dir__, 'config/mongo.yml'))
+
+    @client = connect({ database: db})
     @log = Logger.new (LOGGER_OUT)
   end
 
-  def connect(server: "127.0.0.1", port: "27017", db: "test",  user: "", password: "")
-    client = Mongo::Client.new([ "#{server}:#{port}" ], database: db, user: user, password: password)
+  def connect(options)
+    connection_options = @mongo_cnf["development"].merge(options)
+    server=connection_options.delete("servers")
+    _options={}
+    connection_options.each do |k, v|
+      _options[k.to_sym] = v
+    end
+    client = Mongo::Client.new(server, _options)
   end
 
-  def upload_file(file_path, collection)
-    file = File.open(file_path)
-    headers = file.readline.chomp.split(",").map(&:strip)
+  def upload_file(_file, collection)
+
+    gz = Zlib::GzipReader.new(_file)
+
+    headers = gz.readline.chomp.split(",").map(&:strip)
     result = []
-    file.each_line do |line|
-      data = line.chomp.split(",")
-      json_data = {}
-      headers.each_with_index { |h , i | json_data[h] = data[i] }
-      json_data["timestamp"] = DateTime.strptime(json_data["timestamp"],TIME_STAMP_FORMAT)
-      result << json_data
+    gz.each_line do |line|
+      begin
+        data = line.chomp.split(",")
+        if DateTime.strptime(data[0],TIME_STAMP_FORMAT)
+          json_data = {}
+          headers.each_with_index { |h , i | json_data[h] = data[i] }
+          json_data["timestamp"] = DateTime.strptime(json_data["timestamp"],TIME_STAMP_FORMAT)
+          result << json_data
+        end
+      rescue
+        puts "skip #{line}"
+      end
     end
-    file.close
     _collection = @client[collection]
 
     _result = _collection.insert_many(result)
+    gz.close
     return _result.inserted_count
   end
 
