@@ -2,6 +2,9 @@ require 'sinatra'
 require_relative './zmstat_chart.rb'
 require 'json'
 
+set :bind, '0.0.0.0'
+set :port,  80
+
 get '/' do
   'Hello world!'
 end

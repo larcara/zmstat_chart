@@ -6,11 +6,11 @@ class ZmstatChart
   TIME_STAMP_FORMAT = "%m/%d/%Y %H:%M:%S"
   LOGGER_OUT = STDOUT
   def initialize
-    @client = connect(server: "ds163360.mlab.com", port: 63360, db: "zmstats",  user: "zmstat", password: "zmstat")
+    @client = connect( user: "zmstat", password: "zmstat", db: "zmstats")
     @log = Logger.new (LOGGER_OUT)
   end
 
-  def connect(server: "127.0.0.1", port: "27017", db: "test",  user: "mongo", password: "")
+  def connect(server: "127.0.0.1", port: "27017", db: "test",  user: "", password: "")
     client = Mongo::Client.new([ "#{server}:#{port}" ], database: db, user: user, password: password)
   end
 
