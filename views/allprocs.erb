@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://code.highcharts.com/stock/highstock.js"></script>
+  <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+
+
+</head>
+<body>
+<div id="container" style="width:100%; height:400px;"></div>
+</body>
+<script>
+    var chart1; // globally available
+    var chart1_data = []; // glonbally cached data
+    $(function() {
+        chart1 = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container',
+                defaultSeriesType: 'spline',
+                events: {
+                    load:  load_data("cputime",10000,100)
+                }
+            },
+            title: {
+                text: 'Live random data'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150,
+                maxZoom: 20 * 1000
+            },
+            yAxis: {
+                minPadding: 0.2,
+                maxPadding: 0.2,
+                title: {
+                    text: 'Value',
+                    margin: 80
+                }
+            },
+            series: [{
+                name: 'Random data',
+                data: []
+            }]
+        });
+    });
+
+
+
+    function load_data(field,skip,limit){
+        var url = "/allprocs.json";
+        var field = "cputime";
+        $.getJSON( url, {
+            field: field,
+            skip: skip,
+            limit: limit
+        })
+            .done(function( data ) {
+                var series = chart1.series[0];
+                chart1_data = data;
+                console.log(chart1_data);
+                chart1.series[0].setData(chart1_data);
+                chart1.redraw();
+                 // shift if the series is
+                //$.each( data, function( key, val ) {
+                //    var shift = series.data.length > 2000;
+                 //   var point = val; //{x: val["timestamp"], y: val[field]}
+                 //   //console.log(point);
+                 //   chart1.series[0].addPoint(point, true, shift);
+
+                //});
+                // call it again after one second
+                setTimeout(load_data(field,skip+limit,limit), 5000);
+            });
+    }
+
+</script>
+
+
+</html>
