@@ -35,7 +35,7 @@ class ZmstatChart
   def get_data(collection, field, skip: 0, limit:100)
     _collection = @client[collection]
     _collection.find({},{ 'projection' =>
-                            { 'timestamp' => 1, field => 1 } }).skip(skip.to_i).limit(limit.to_i).map{|x| [x["timestamp"].to_i, x[field].to_f ]}
+                            { 'timestamp' => 1, field => 1 } }).skip(skip.to_i).limit(limit.to_i).map{|x| [x["timestamp"].to_i*1000, x[field].to_f ]}
 
   end
 end

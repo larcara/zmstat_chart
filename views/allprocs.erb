@@ -21,7 +21,7 @@
                 renderTo: 'container',
                 defaultSeriesType: 'spline',
                 events: {
-                    load:  load_data("cputime",10000,100)
+                    load:  load_data("cputime",10000,1000)
                 }
             },
             title: {
@@ -60,8 +60,8 @@
             .done(function( data ) {
                 var series = chart1.series[0];
                 $.each(data, function(key,val){chart1_data.push(val);});
-                if (chart1_data.size > 10000)
-                    {chart1_data.slice(0,100);}
+                if (chart1_data.size > limit*100)
+                    {chart1_data.slice(0,limit*3);}
 
                 chart1.series[0].setData(chart1_data);
                 chart1.redraw();
