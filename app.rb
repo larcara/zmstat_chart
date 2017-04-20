@@ -14,6 +14,9 @@ get "/allprocs" do
 end
 
 get "/graph2" do
+  @collection = params["collection"] || "pop3"
+  @field = params["field"] || "exec_count"
+
   erb :graph2
 end
 
